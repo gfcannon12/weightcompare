@@ -36,19 +36,30 @@ while run:
     comparison_range_start = (today-comparison_delta-length_delta)
     comparison_range_end = (today-comparison_delta)
     
+    # Take current average
     current_df = df[(df['Date'] >= current_range_start) & (df['Date'] <= current_range_end)]
     current_weight_count = current_df[['Weight']].count().values[0]
     current_weight_avg = current_df[['Weight']].mean()
-    current_weight_avg = str(round(current_weight_avg.values[0], 2))
-    print('Over the last ' + period_length + ' days, you took ' + str(current_weight_count) + ' measurements, and your average weight is ' + current_weight_avg)
+    print('Over the last ' + period_length + ' days, you took ' + str(current_weight_count) + ' measurements, and your average weight is ' + str(round(current_weight_avg.values[0], 2)))
     
+    # Take comparison average
     comparison_df = df[(df['Date'] >= comparison_range_start) & (df['Date'] <= comparison_range_end)]
     comparison_weight_count = comparison_df[['Weight']].count().values[0]
     comparison_weight_avg = comparison_df[['Weight']].mean()
-    comparison_weight_avg = str(round(comparison_weight_avg.values[0], 2))
-    print('For the same period ' + comparison_period + ' days ago, you took ' + str(comparison_weight_count) + ' measurements, and your average weight was ' + comparison_weight_avg)
-    
-    run_again = input('Another query? y/n: ')
+    print('For the same period ' + comparison_period + ' days ago, you took ' + str(comparison_weight_count) + ' measurements, and your average weight was ' + str(round(comparison_weight_avg.values[0], 2)))
+
+    # Make comparison
+    difference = current_weight_avg.values[0] - comparison_weight_avg.values[0]
+    if abs(difference) < 0.01:
+        assessment = 'Your weight is the same as the comparison period'
+    elif difference > 0.01:
+        assessment = 'Your weight is ' + str(round(difference, 2)) + ' pounds heavier than the comparison period'
+    else:
+        assessment = 'Your weight is ' + str(abs(round(difference, 2))) + ' pounds lighter than the comparison period'
+    print(assessment)
+
+    # Run another comparison
+    run_again = input('Make another comparison? (y/n): ')
     if run_again in ['y', 'Y', 'yes', 'Yes', 'YES']:
         run = True
     else:
